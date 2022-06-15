@@ -1,0 +1,63 @@
+from utils.utils import time_transition
+from sql_app import crud
+
+
+class PickUpService:
+    status_map = {
+        '0': '未取货',
+        '1': '已取货',
+        '2': '订单取消'
+    }
+
+    @classmethod
+    def add_pick_up_order(cls, db, address):
+        """
+        新增自提訂單
+        :param db:
+        :param address: 自提地址
+        :return: 自提物流信息
+        """
+        data_obj = crud.pick_up_create(db, {'address': address, 'status': 0})
+        id = data_obj.id
+        updated_at = data_obj.created_at
+        updated_at = time_transition(updated_at)
+        return {'data': {'id': id, 'address': address, 'status': cls.status_map['0'], 'updated_at': updated_at,
+                         'message': 'success'}}
+
+    @classmethod
+    def fop_rece_ltl_search_router(cls, db, barcode):
+        """
+        獲取自提物流信息
+        :param db:
+        :param barcode: 自提物流單號
+        :return: 自提物流信息
+        """
+        data_obj = crud.pick_up_find_by_id(db, barcode)
+        if not data_obj:
+            return {'message': '查无订单'}
+        id = data_obj.id
+        updated_at = data_obj.updated_at if data_obj.updated_at else data_obj.created_at
+        updated_at = time_transition(updated_at)
+        address = data_obj.address
+        status = data_obj.status
+        return {'data': {'id': id, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at,
+                         'message': 'success'}}
+
+    @classmethod
+    def update_status(cls, db, barcode, status):
+        """
+        更新物流狀態
+        :param db:
+        :param barcode: 自提物流單號
+        :param status: 物流狀態
+        :return: 自提物流信息
+        """
+        if status not in cls.status_map:
+            return {'message': '状态未定义'}
+        status, address, updated_at = crud.pick_up_update_status(db, barcode, status)
+        updated_at = time_transition(updated_at)
+        if not status:
+            return {'message': '查无订单'}
+        return {
+            'data': {'id': barcode, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at,
+                     'message': 'success'}}
