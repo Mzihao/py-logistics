@@ -3,68 +3,6 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 
-class TrackInfo(BaseModel):
-    StatusDescription: Optional[str] = Query(default='', description='路由节点具体描述')
-    Date: Optional[str] = Query(default='', description='路由节点发生的时间')
-    Details: Optional[str] = Query(default='', description='路由节点发生的地点')
-    checkpoint_status: Optional[str] = Query(default='')
-    substatus: Optional[str] = Query(default='', description='路由节点操作码')
-
-
-class OriginInfo(BaseModel):
-    ReferenceNumber: Optional[str] = Query(default='')
-    ItemReceived: Optional[str] = Query(default='')
-    ItemDispatched: Optional[str] = Query(default='')
-    DepartfromAirport: Optional[str] = Query(default='')
-    ArrivalfromAbroad: Optional[str] = Query(default='')
-    CustomsClearance: Optional[str] = Query(default='')
-    DestinationArrived: Optional[str] = Query(default='')
-    weblink: Optional[str] = Query(default='', description='物流商的官网的链接')
-    phone: Optional[str] = Query(default='', description='物流商官网上的电话')
-    carrier_code: Optional[str] = Query(default='', description='物流商对应的唯一简码')
-    trackinfo: List[TrackInfo] = Query(description='路由信息Route的集合', default=['暂无信息'])
-
-
-class Logistics(BaseModel):
-    id: Optional[str] = Query(default=1, description='Topkee唯一物流订单号')
-    tracking_number: Optional[str] = Query(default='', description='物流运单号')
-    carrier_code: Optional[str] = Query(default='', description='物流商对应的唯一简码')
-    success: Optional[bool] = Query(default=False, description='查询是否成功')
-    status: Optional[str] = Query(default='', description='物流状态')
-    track_update: Optional[bool] = Query(default=False, description='自动更新查询功能的状态')
-    created_at: Optional[str] = Query(default='', description='创建查询的时间')
-    updated_at: Optional[str] = Query(default='', description='系统最后更新查询的时间')
-    order_create_time: Optional[str] = Query(default='', description='包裹发货时间')
-    customer_email: Optional[str] = Query(default='', description='客户邮箱')
-    customer_phone: List[str] = Query(default=[], description='顾客接收短信的手机号码')
-    title: Optional[str] = Query(default='', description='包裹名称')
-    order_id: Optional[str] = Query(default='', description='包裹的订单号')
-    comment: Optional[str] = Query(default='')
-    customer_name: Optional[str] = Query(default='', description='客户姓名')
-    archived: Optional[bool] = Query(default=False, description='是否归档')
-    original_country: Optional[str] = Query(default='', description='发件国的名称')
-    destination_country: Optional[str] = Query(default='', description='目的国的名称')
-    itemTimeLength: Optional[str] = Query(default='')
-    stayTimeLength: Optional[str] = Query(default='')
-    origin_info: Optional[OriginInfo] = Query(default={}, description='发件国的物流信息')
-    service_code: Optional[str] = Query(default='', description='快递服务类型，比如次日达（部分物流商返回）')
-    status_info: Optional[str] = Query(default='', description='最新的一条物流信息')
-    weight: Optional[str] = Query(default='', description='该货物的重量')
-    substatus: Optional[str] = Query(default='')
-    packageStatus: Optional[str] = Query(default='')
-    lastEvent: Optional[str] = Query(default='', description='最新物流信息的梗概，包括以下信息：状态、地址、时间')
-    lastUpdateTime: Optional[str] = Query(default='')
-    errorCode: Optional[str] = Query(description='错误代码', default='')
-    errorMessage: Optional[str] = Query(description='错误描述', default='')
-
-
-# 物流查询响应
-class LogisticsResponse(BaseModel):
-    code: int = Path(default=200)
-    message: str = Path(default='success')
-    data: Logistics = Path(default={})
-
-
 class PickUp(BaseModel):
     id: Optional[str] = Query(default=None, description='编号')
     address: Optional[str] = Query(default=None, description='自提地址')
@@ -201,7 +139,9 @@ class CancelOrderResponse(BaseModel):
     success: Optional[bool] = Query(default=True, description='是否成功')
 
 
-class V2TrackInfo(BaseModel):
+# new
+# ============================================================================
+class TrackInfo(BaseModel):
     StatusDescription: str = Query(default='', description='路由节点具体描述')
     Date: str = Query(default='', description='路由节点发生的时间')
     Details: str = Query(default='', description='路由节点发生的地点')
@@ -209,22 +149,23 @@ class V2TrackInfo(BaseModel):
     substatus: str = Query(default='', description='路由节点操作码')
 
 
-class V2OriginInfo(BaseModel):
-    trackinfo: List[V2TrackInfo] = Query(description='路由信息Route的集合', default=['暂无信息'])
-
-
-class V2Logistics(BaseModel):
+class Logistics(BaseModel):
     id: str = Query(default=None, description='Topkee唯一物流订单号')
     tracking_number: str = Query(default=None, description='物流运单号')
     carrier_code: str = Query(default=None, description='物流商对应的唯一简码')
     weblink: str = Query(default=None, description='物流商的官网的链接')
     phone: str = Query(default=None, description='物流商官网上的电话')
     status: str = Query(default=None, description='物流状态')
-    origin_info: V2OriginInfo = Query(default=None, description='发件国的物流信息')
+    origin_info: List[TrackInfo] = Query(description='路由信息Route的集合', default=None)
 
 
 # 物流查询响应
-class V2LogisticsResponse(BaseModel):
+class SearchLogisticsResponse(BaseModel):
     code: int
     message: str
-    data: V2Logistics
+    data: Logistics = Query(default={})
+
+
+class CancelLogisticsResponse(BaseModel):
+    code: int
+    message: str

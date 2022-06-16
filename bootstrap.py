@@ -3,12 +3,11 @@ import sys
 from loguru import logger
 from starlette.status import HTTP_403_FORBIDDEN
 from sql_app.database import engine, Base
-from fastapi import FastAPI, HTTPException, Security
+from fastapi import FastAPI, HTTPException, Security, Depends
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from settings import TOKEN_LIST
 from api.v1 import logistics_express, pick_up
-from api.v2 import logistics_express as v2
 from api.index import index
 from api.operations import healthcheck
 from extensions.logger import InterceptHandler, format_record
@@ -38,10 +37,9 @@ async def get_api_key(api_key_header: str = Security(APIKeyHeader(name='token', 
 
 def register_routes(app: FastAPI) -> None:
     app.include_router(router=index.router)
-    app.include_router(router=healthcheck.router, prefix="/operations")
-    app.include_router(router=logistics_express.router, prefix="/v1/logistics/express")
-    app.include_router(router=v2.router, prefix="/v1/logistics/express")
-    app.include_router(router=pick_up.router, prefix="/v1/logistics/pickUp")
+    app.include_router(router=healthcheck.router, prefix="")
+    app.include_router(router=logistics_express.router, prefix="")
+    app.include_router(router=pick_up.router, prefix="")
 
 
 def register_middleware(app: FastAPI) -> None:

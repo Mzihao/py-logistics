@@ -2,7 +2,8 @@ import requests
 import re
 import time
 from lxml import etree
-from app.utils import creat_or_update_logistics
+from sqlalchemy.orm import Session
+from utils.utils import creat_or_update_logistics
 
 
 class MapleLogisticsExpressService:
@@ -27,39 +28,37 @@ class MapleLogisticsExpressService:
         :return: 表单tik
         """
         res = self.session.get(self.url, headers=self.headers)
-        # cookie_jar = res.cookies
         html = res.text
-        # cookie_dict = requests.utils.dict_from_cookiejar(cookie_jar)
-        # print(cookie_dict)
         pat = '<input name="tik" id="tik" type="hidden" value="(.*?)" />'
         tik = re.compile(pat).findall(html)
         return tik[0]
 
     @staticmethod
-    def get_payload(tik: str, tracking_number: str) -> dict:
+    def get_payload(tik: str, barcode: str) -> dict:
         """
         :param tik: 表单tik
-        :param tracking_number: 物流单号
+        :param barcode: 物流单号
         :return: payload post资源
         """
         payload: dict = {
             'tik': tik,
         }
-        payload.update({f'BARCODE1': tracking_number})
+        payload.update({f'BARCODE1': barcode})
         return payload
 
-    def fop_rece_ltl_search_router(self, db, tracking_number: str, id=None, *args, **kwargs) -> dict:
+    def search_router(self, db: Session, barcode: str, tenant_id: str, id=None) -> (int, dict):
         """
         获取快递信息
         :param db:
-        :param id: 雪花id
-        :param tracking_number: 物流单号
+        :param barcode: 物流单号
+        :param tenant_id: 租户id
+        :param id: 订单id
         :return: 快递信息
         """
-        if len(tracking_number) != 9 and len(tracking_number) != 10 and len(tracking_number) != 12:
-            return {'code': 200, 'message': 'success', 'data': {'success': False, 'errorMessage': '條碼長度不正確'}}
+        if len(barcode) not in [9, 10, 12]:
+            return 4001, {}
         tik: str = self.get_cookie_and_tik()
-        payload: dict = self.get_payload(tik, tracking_number)
+        payload: dict = self.get_payload(tik, barcode)
         data: str = ''
         for k, v in payload.items():
             data += f'{k}={v}&'
@@ -94,16 +93,7 @@ class MapleLogisticsExpressService:
             message_list = [{'Date': time.strftime("%Y-%m-%d %H:%M:%S"), 'StatusDescription': res_list[0]}]
         info.update({'carrier_code': 'bld-express'})
         creat_or_update_logistics(db, id, info)
-        info['origin_info'] = {}
         info['status'] = 'notfound' if res_list[0] == '查無條碼(6週)' else ''
-        info['origin_info']['weblink'] = 'http://www.25431010.tw/Search.php'
-        info['origin_info']['carrier_code'] = 'bld-express'
-        info['origin_info']['trackinfo'] = list(reversed(message_list))
-        info.update({'success': True})
-        return {'code': 200, 'message': 'success', 'data': info}
-
-# if __name__ == '__main__':
-#     b = '125259548621'
-#     info = MapleLogisticsExpress()
-#     message = info.get_logistics_info(b)
-#     print(message)
+        info['weblink'] = 'http://www.25431010.tw/Search.php'
+        info['origin_info'] = list(reversed(message_list))
+        return 200, info

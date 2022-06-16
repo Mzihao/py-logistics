@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
-from fastapi import Query, Path
+from fastapi import Path
 from sql_app.database import get_db
 from sql_app.schemas import PickUpResponse, PickUpStatusPayload, PickUpAddressPayload
-from typing import Optional
 from sqlalchemy.orm import Session
 from service.v1.pick_up_service import PickUpService
 
