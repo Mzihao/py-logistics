@@ -44,6 +44,7 @@ class Transport:
             return 4003, {}
 
     @classmethod
+    @response_json
     def delete_transport(cls, carrier_code, tracking_number):
         """
         取消订单
@@ -55,8 +56,7 @@ class Transport:
             service_name = cancel_platform_map[carrier_code]
             logistics_class = lazy_import(service_name)
             service = logistics_class()
-            result = service.cancel_order(tracking_number)
-            return result
+            code, data = service.cancel_order(tracking_number)
+            return code, data
         except KeyError:
-            return {'code': 200, 'message': 'success',
-                    'data': {'success': False, 'errorCode': 'unknown', 'errorMessage': '未知物流平台，请检查后再重试!'}}
+            return 4003, {}
