@@ -1,5 +1,6 @@
 from utils.utils import time_transition
 from sql_app import crud
+from utils.utils import response_json
 
 
 class PickUpService:
@@ -10,6 +11,7 @@ class PickUpService:
     }
 
     @classmethod
+    @response_json
     def add_pick_up_order(cls, db, address):
         """
         新增自提訂單
@@ -21,11 +23,11 @@ class PickUpService:
         id = data_obj.id
         updated_at = data_obj.created_at
         updated_at = time_transition(updated_at)
-        return {'data': {'id': id, 'address': address, 'status': cls.status_map['0'], 'updated_at': updated_at,
-                         'message': 'success'}}
+        return 200, {'id': id, 'address': address, 'status': cls.status_map['0'], 'updated_at': updated_at}
 
     @classmethod
-    def fop_rece_ltl_search_router(cls, db, barcode):
+    @response_json
+    def search_router(cls, db, barcode):
         """
         獲取自提物流信息
         :param db:
@@ -40,10 +42,10 @@ class PickUpService:
         updated_at = time_transition(updated_at)
         address = data_obj.address
         status = data_obj.status
-        return {'data': {'id': id, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at,
-                         'message': 'success'}}
+        return 200, {'id': id, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at,}
 
     @classmethod
+    @response_json
     def update_status(cls, db, barcode, status):
         """
         更新物流狀態
@@ -53,11 +55,11 @@ class PickUpService:
         :return: 自提物流信息
         """
         if status not in cls.status_map:
-            return {'message': '状态未定义'}
+            # {'message': '状态未定义'}
+            return 500, {}
         status, address, updated_at = crud.pick_up_update_status(db, barcode, status)
         updated_at = time_transition(updated_at)
         if not status:
-            return {'message': '查无订单'}
-        return {
-            'data': {'id': barcode, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at,
-                     'message': 'success'}}
+            # {'message': '查无订单'}
+            return 500, {}
+        return 200, {'id': barcode, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at}
