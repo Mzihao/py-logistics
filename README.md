@@ -18,5 +18,5 @@ docker build -t fastapi_template:latest .
 docker run -it -p 9000:9000 py-logistics
 ```
 
-## 预览
+## 本地预览
 http://127.0.0.1:9000/docs
