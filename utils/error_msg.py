@@ -19,7 +19,6 @@ ErrorNotStatus = 4004
 ErrorServer = 4005
 ErrorNotOrder = 4006
 
-
 # code= 500...
 VerificationFailure = 5001
 
