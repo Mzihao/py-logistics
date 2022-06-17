@@ -12,10 +12,10 @@ class PickUpService:
 
     @classmethod
     @response_json
-    def add_pick_up_order(cls, db, address):
+    def add_pick_up_order(cls, db: Session, address: str) -> (int, dict):
         """
         新增自提訂單
-        :param db:
+        :param db: 数据库实例
         :param address: 自提地址
         :return: 自提物流信息
         """
@@ -27,7 +27,7 @@ class PickUpService:
 
     @classmethod
     @response_json
-    def search_router(cls, db, barcode):
+    def search_router(cls, db: Session, barcode: str) -> (int, dict):
         """
         獲取自提物流信息
         :param db:
@@ -46,7 +46,7 @@ class PickUpService:
 
     @classmethod
     @response_json
-    def update_status(cls, db, barcode, status):
+    def update_status(cls, db: Session, barcode: str, status: str) -> (int, dict):
         """
         更新物流狀態
         :param db:
