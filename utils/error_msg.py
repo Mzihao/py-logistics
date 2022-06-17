@@ -15,6 +15,10 @@ ErrorUserNoRight = 1008
 IncorrectLength = 4001
 NotFound = 4002
 NotSupport = 4003
+ErrorNotStatus = 4004
+ErrorServer = 4005
+ErrorNotOrder = 4006
+
 
 # code= 500...
 VerificationFailure = 5001
@@ -33,6 +37,9 @@ code_msg = {
     IncorrectLength: "物流单号长度不正确",
     NotFound: "查无此单号",
     NotSupport: "暂未支持该物流公司",
+    ErrorServer: "物流商服务器异常",
+    ErrorNotStatus: "状态未定义",
+    ErrorNotOrder: "订单不存在",
     VerificationFailure: "数据校验失败",
 }
 

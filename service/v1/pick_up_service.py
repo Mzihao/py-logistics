@@ -55,11 +55,9 @@ class PickUpService:
         :return: 自提物流信息
         """
         if status not in cls.status_map:
-            # {'message': '状态未定义'}
-            return 500, {}
+            return 4004, {}
         status, address, updated_at = crud.pick_up_update_status(db, barcode, status)
         updated_at = time_transition(updated_at)
         if not status:
-            # {'message': '查无订单'}
-            return 500, {}
+            return 4006, {}
         return 200, {'id': barcode, 'address': address, 'status': cls.status_map[f'{status}'], 'updated_at': updated_at}
