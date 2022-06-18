@@ -10,7 +10,7 @@ from settings import TOKEN_LIST
 from api.v1 import logistics_express, pick_up
 from api.index import index
 from api.operations import healthcheck
-from extensions.logger import InterceptHandler, format_record
+from utils.logger import InterceptHandler, format_record
 
 
 def bootstrap() -> FastAPI:
