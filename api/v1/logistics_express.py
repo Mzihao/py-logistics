@@ -11,7 +11,7 @@ from utils.error_msg import get_error_msg
 router = APIRouter(tags=['LogisticsExpress'], prefix="/v1/logistics/express")
 
 
-@router.get("/{barcode}", summary='物流查询', response_model=SearchLogisticsResponse)
+@router.get("/{barcode}", summary='物流查询', response_model=SearchLogisticsResponse, response_model_exclude_unset=True)
 def search(
         db: Session = Depends(get_db),
         barcode: str = Path(default=1, description='物流运单号'),
@@ -25,7 +25,7 @@ def search(
         return {"code": 1006, "message": get_error_msg(1006), "data": {}}
 
 
-@router.delete("/{barcode}", summary='取消订单', response_model=CancelLogisticsResponse)
+@router.delete("/{barcode}", summary='取消订单', response_model=CancelLogisticsResponse, response_model_exclude_unset=True)
 def cancel(
         barcode: str = Path(default=1, description='物流运单号'),
         carrier_code: str = Query(default='', description="物流商对应的唯一简码"),
@@ -37,7 +37,7 @@ def cancel(
         return {"code": 1006, "message": get_error_msg(1006), "data": {}}
 
 
-@router.post("/{carrier_code}", summary='物流下单', response_model=CreateOrderResponse)
+@router.post("/{carrier_code}", summary='物流下单', response_model=CreateOrderResponse, response_model_exclude_unset=True)
 def create(
         create_order_payload: CreateOrderPayload,
         carrier_code: str = Path(default=None, description="物流商对应的唯一简码"),

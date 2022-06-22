@@ -10,7 +10,7 @@ from settings import TOKEN_LIST
 router = APIRouter(tags=['PickUp'], prefix="/v1/logistics/pickUp")
 
 
-@router.get("/{barcode}", summary='自提查询', response_model=PickUpResponse)
+@router.get("/{barcode}", summary='自提查询', response_model=PickUpResponse, response_model_exclude_unset=True)
 def get(
     barcode: str = Path(default=1, description='物流运单号'),
     db: Session = Depends(get_db),
@@ -22,20 +22,20 @@ def get(
         return {"code": 1006, "message": get_error_msg(1006), "data": {}}
 
 
-@router.put("/{barcode}", summary='自提状态修改', response_model=PickUpResponse)
+@router.put("/{barcode}", summary='自提状态修改', response_model=PickUpResponse, response_model_exclude_unset=True)
 def put(statusPayload: PickUpStatusPayload,
               barcode: str = Path(default=1, description='物流运单号'),
               db: Session = Depends(get_db)):
     return PickUpService.update_status(db, barcode, statusPayload.status)
 
 
-@router.delete("/{barcode}", summary='取消自提订单', response_model=PickUpResponse)
+@router.delete("/{barcode}", summary='取消自提订单', response_model=PickUpResponse, response_model_exclude_unset=True)
 def delete(barcode: str = Path(default=1, description='物流运单号'),
                  db: Session = Depends(get_db)):
     return PickUpService.update_status(db, barcode, '2')
 
 
-@router.post("/", summary='自提下单', response_model=PickUpResponse)
+@router.post("/", summary='自提下单', response_model=PickUpResponse, response_model_exclude_unset=True)
 def post(addressPayload: PickUpAddressPayload,
                db: Session = Depends(get_db)):
     return PickUpService.add_pick_up_order(db, addressPayload.address)
