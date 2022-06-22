@@ -1,6 +1,7 @@
 from utils.utils import time_transition
 from sql_app import crud
 from utils.utils import response_json
+from sqlalchemy.orm import Session
 
 
 class PickUpService:

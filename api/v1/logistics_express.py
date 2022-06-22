@@ -22,7 +22,7 @@ def search(
     if api_key_header in TOKEN_LIST:
         return Transport.get_transport(db, barcode, tenant_id, carrier_code)
     else:
-        return {"code": 1006, "message": get_error_msg(1006), "data": {}}
+        return {"code": 1006, "message": get_error_msg(1006)}
 
 
 @router.delete("/{barcode}", summary='取消订单', response_model=CancelLogisticsResponse, response_model_exclude_unset=True)
@@ -34,7 +34,7 @@ def cancel(
     if api_key_header in TOKEN_LIST:
         return Transport.delete_transport(barcode, carrier_code)
     else:
-        return {"code": 1006, "message": get_error_msg(1006), "data": {}}
+        return {"code": 1006, "message": get_error_msg(1006)}
 
 
 @router.post("/{carrier_code}", summary='物流下单', response_model=CreateOrderResponse, response_model_exclude_unset=True)
@@ -46,4 +46,4 @@ def create(
     if api_key_header in TOKEN_LIST:
         return Transport.post_transport(carrier_code, create_order_payload)
     else:
-        return {"code": 1006, "message": get_error_msg(1006), "data": {}}
+        return {"code": 1006, "message": get_error_msg(1006)}

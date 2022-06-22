@@ -163,7 +163,7 @@ class Logistics(BaseModel):
 class SearchLogisticsResponse(BaseModel):
     code: int
     message: str
-    data: Logistics = Query(default={})
+    data: Logistics = {}
 
 
 class CancelLogisticsResponse(BaseModel):
