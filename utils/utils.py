@@ -3,7 +3,6 @@ import hashlib
 import datetime
 import pytz
 import time
-from flask import g
 from importlib import import_module
 from sql_app import crud
 from settings import TOKEN_LIST
