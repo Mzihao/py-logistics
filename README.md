@@ -1,3 +1,6 @@
+[![OSCS Status](https://www.oscs1024.com/platform/badge/Mzihao/py-logistics.svg?size=small)](https://www.oscs1024.com/project/Mzihao/py-logistics?ref=badge_small)
+
+
 # 基于fastapi的物流聚合api服务
 
 ## version
